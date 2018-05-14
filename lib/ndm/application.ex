@@ -17,6 +17,7 @@ defmodule Ndm.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Ndm.Supervisor]
+    Ndm.SessionManager.start_link()
     Supervisor.start_link(children, opts)
   end
 

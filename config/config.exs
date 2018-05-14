@@ -13,6 +13,18 @@ config :ndm, NdmWeb.Endpoint,
   pubsub: [name: Ndm.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+# Configures the guardian session management library
+config :guardian, Guardian,
+allowed_algos: ["HS512"], # optional
+verify_module: Guardian.JWT,  # optional
+issuer: "Ndm",
+ttl: { 30, :days },
+allowed_drift: 2000,
+verify_issuer: true, # optional
+secret_key: "GNmJ/ZBcHxpG2/7x4T+34mlMTLo5vLnXijB/zjFHBcc/b3x/B7HgQtIc+CaB1r7U",
+serializer: Ndm.GuardianSerializer,
+permissions: %{ user: [:default] }
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

@@ -9,14 +9,36 @@ defmodule NdmWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :browser_session do
+    plug Guardian.Plug.VerifySession
+    plug Guardian.Plug.LoadResource
+  end
+
+  pipeline :require_login do
+    plug Guardian.Plug.EnsureAuthenticated,
+      handler: NdmWeb.AuthController
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
 
   scope "/", NdmWeb do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
+
+    get "/login", AuthController, :new_url
+
+    get "/login.html", AuthController, :new
+    post "/login.html", AuthController, :create
+
+    get "/logout.html", AuthController, :logout
+  end
+
+  scope "/", NdmWeb do
+    pipe_through [:browser, :browser_session, :require_login]
 
     get "/", PageController, :index
+    get "/index.html", PageController, :index
   end
 
   # Other scopes may use custom stacks.
