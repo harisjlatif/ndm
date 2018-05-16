@@ -41,7 +41,8 @@ defmodule Ndm.Mixfile do
       {:httpoison, "~> 1.0"},
       {:floki, "~> 0.18.0"},
       {:cookie_jar, "~> 1.0"},
-      {:guardian, "~> 0.14.5"}
+      {:guardian, "~> 0.14.5"},
+      {:timex, "~> 3.1"}
     ]
   end
 end

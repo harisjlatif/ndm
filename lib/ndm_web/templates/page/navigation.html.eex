@@ -38,19 +38,7 @@
                     <a href="/index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 
-                <li><a href="/system_information.html"><i class="fa fa-info fa-fw"></i> System Information</a></li>
-                
-                <li><a href="/peripheral_devices.html"><i class="fa fa-table fa-fw"></i> View Peripheral Devices</a></li>
-
-                <li><a href="/db_tables.html"><i class="fa fa-table fa-fw"></i> View Database Tables</a></li>
-
-                <li><a href="/class_debug.html"><i class="fa fa-bug fa-fw"></i> View Class Debug Information</a></li>
-
-                <li><a href="/licenses.html"><i class="fa fa-file fa-fw"></i> Open Source Licenses</a></li>
-
-                <li><a href="/settings/general.html"><i class="fa fa-cogs fa-fw"></i> Settings</a></li>
-                
-                <li><a href="/support.html"><i class="fa fa-wrench fa-fw"></i> Support</a></li>
+                <li><a href="/dailies.html"><i class="fa fa-info fa-fw"></i> Dailies</a></li>
             </ul>
         </div>
         <!-- /.sidebar-collapse -->

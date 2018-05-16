@@ -1,4 +1,5 @@
 defmodule Ndm.SessionManager do
+  require Logger
   use Agent
 
   @doc """
@@ -24,19 +25,12 @@ defmodule Ndm.SessionManager do
   end
 
   def get_cookies() do
-    case Agent.get(__MODULE__, fn c -> Map.get(c, :jar) end) do
-      nil ->
-        IO.inspect("Cookie jar does not exist yet, creating a new one")
-        {:ok, jar} = CookieJar.new
-        Agent.update(__MODULE__, fn c -> Map.put(c, :jar, jar) end)
-        jar
-      jar ->
-        IO.inspect("Found a cookie jar")
-        jar
-    end
+    Logger.debug("Retrieving cookies")
+    Agent.get(__MODULE__, fn c -> Map.get(c, :jar) end)
   end
 
   def drop_cookies() do
+    Logger.debug("Dropping cookies")
     Agent.update(__MODULE__, fn c -> Map.delete(c, :jar) end)
   end
 
@@ -46,5 +40,11 @@ defmodule Ndm.SessionManager do
 
   def get_bank() do
     Agent.get(__MODULE__, fn c -> Map.get(c, :bank) end)
+  end
+
+  def new_cookie_jar() do
+    Logger.debug("Creating new cookie jar")
+    {:ok, jar} = CookieJar.new
+    Agent.update(__MODULE__, fn c -> Map.put(c, :jar, jar) end)
   end
 end

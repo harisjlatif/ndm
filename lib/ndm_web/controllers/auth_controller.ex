@@ -37,6 +37,8 @@ defmodule NdmWeb.AuthController do
   Handles the requests to out the user out.
   """
   def logout(conn, _params) do
+    Ndm.SessionManager.drop_cookies()
+
     conn
     |> Guardian.Plug.sign_out
     |> put_flash(:info, "Logged out")
@@ -63,13 +65,12 @@ defmodule NdmWeb.AuthController do
   and allow the user to try and re-login.
   """
   def create(conn, %{"login" => %{"username" => username, "password" => password}}) do
+    Ndm.SessionManager.new_cookie_jar()
     # Check if the credentials provided at login page are valid
     case authenticate(username, password) do
       :user ->
-        IO.inspect("User #{username} authenticated successfully")
         signed_in(conn, username, %{user: [:default]})
       :error ->
-        IO.inspect("User #{username} authentication failed")
         error_in(conn)
     end
   end
