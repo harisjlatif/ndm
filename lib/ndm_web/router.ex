@@ -39,6 +39,7 @@ defmodule NdmWeb.Router do
 
     get "/", PageController, :index
     get "/index.html", PageController, :index
+    get "/dailies.html", PageController, :dailies
   end
 
   # Other scopes may use custom stacks.

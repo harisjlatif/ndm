@@ -1,0 +1,73 @@
+<title>Telligence Dashboard</title>
+<div id="wrapper">
+    <%= render NdmWeb.PageView, "navigation.html", conn: @conn %>
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Dailies</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: :jelly, name: "Free Jelly"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: :omlette, name: "Omlette"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: :bank, name: "Bank"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: :tree, name: "Money Tree"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: :thrift, name: "Thrift Shoppe"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: :, name: "Rubbish Dump"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 6, name: "Altador Council"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 7, name: "Shop of Offers"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 8, name: "Trudys Surprise"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 9, name: "Freebies"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 10, name: "Movie Central"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 11, name: "Quarry"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 12, name: "Apple Bobbing"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 13, name: "Anchor Management"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 14, name: "Neggcave"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 15, name: "Gravedanger"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 16, name: "Wheel of Mediocrity"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 17, name: "Wheel of Excitement"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 18, name: "Wheel of Knowledge"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 19, name: "Winter Kiosk"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 20, name: "Tombola"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 21, name: "Snowager"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 22, name: "Wheel of Knowledge"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 23, name: "Winter Kiosk"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 24, name: "Guess The Marrow"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 25, name: "Wise ol King"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 26, name: "Grumpy King"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 27, name: "Geraptiku Tomb"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 28, name: "Colztan Shrine"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 29, name: "Meteor"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 30, name: "TDMBGPOP"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 31, name: "Fishing"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 32, name: "Hide N Seek"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 33, name: "NC Giveaway"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 34, name: "Lunar Calendar"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 35, name: "Potato Counter"}} %>
+                </div>
+                <div class="row">
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 36, name: "Forgotten Shore"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 37, name: "Healing Springs"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 38, name: "Buried Treasure"}} %>
+                    <%= render NdmWeb.PageView, "dailies_entry.html", %{daily: %DailyModel{id: 39, name: "Test Your Strength"}} %>
+                </div>
+            </div>
+        </div>
+</div>
