@@ -9,6 +9,7 @@ defmodule Ndm.DailiesManager do
   end
 
   def add_daily(module, name) do
+    module.start_link()
     Agent.update(__MODULE__, fn c -> MapSet.put(c, %{module: module, name: name}) end)
   end
 

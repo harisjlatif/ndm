@@ -2,6 +2,7 @@ defmodule NdmWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
+  channel "connection", NdmWeb.ConnectionChannel
   channel "dailies", NdmWeb.DailiesChannel
 
   ## Transports

@@ -24,7 +24,7 @@
                                             <%= for x <- Ndm.DailiesManager.get_dailies() do %>
                                             <tr>
                                                 <td><%= Map.get(x, :name) %></td>
-                                                <td id="<%=Map.get(x, :module)%>">Not Running</td>
+                                                <td><div id="<%= Map.get(x, :name) %>">Not Running</div></td>
                                             </tr>
                                             <% end %>
                                         </tbody>
@@ -37,3 +37,4 @@
         </div>
 </div>
 
+<script src="<%= static_path(@conn, "/js/dailies.js") %>"></script>

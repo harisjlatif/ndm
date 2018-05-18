@@ -40,6 +40,8 @@ defmodule Ndm.HttpUtils do
       {:ok, response = %HTTPoison.Response{status_code: 200}} ->
         handle_response(response)
         {:ok, response}
+      {:ok, response = %HTTPoison.Response{request_url: "http://www.neopets.com/process_bank.phtml"}} ->
+        {:ok, response}
       {:error, response} ->
         IO.inspect("Unable to connect")
         {:error, response}

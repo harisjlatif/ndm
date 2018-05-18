@@ -19,7 +19,6 @@ defmodule Ndm.Application do
     opts = [strategy: :one_for_one, name: Ndm.Supervisor]
     Ndm.SessionManager.start_link()
     Ndm.DailiesManager.start_link()
-
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Bank, "Bank")
 
     Supervisor.start_link(children, opts)

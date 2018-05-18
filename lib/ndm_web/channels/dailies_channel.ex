@@ -5,9 +5,9 @@ defmodule NdmWeb.DailiesChannel do
   ##
   # Test Call Switch Broadcast Messages
   ##
-  def broadcast_timer_update({hour, minute, seconds, _}, module) do
+  def broadcast_timer_update({hour, minute, seconds, _}, name) do
     time = "Execute in: #{hour}:#{minute}:#{seconds}"
-    NdmWeb.Endpoint.broadcast(@channel, "update_timer", %{module: module, time: time})
+    NdmWeb.Endpoint.broadcast(@channel, "update_timer", %{name: name, time: time})
   end
 
   ##

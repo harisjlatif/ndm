@@ -25,7 +25,6 @@ defmodule Ndm.SessionManager do
   end
 
   def get_cookies() do
-    Logger.debug("Retrieving cookies")
     Agent.get(__MODULE__, fn c -> Map.get(c, :jar) end)
   end
 
