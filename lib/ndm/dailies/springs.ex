@@ -15,7 +15,7 @@ defmodule Ndm.Dailies.Springs do
   end
 
   def time_till_execution(last_execution) do
-    last_execution |> Timex.Timezone.end_of_day
+    last_execution |> Timex.shift(minutes: 31)
   end
 
   def start_link() do

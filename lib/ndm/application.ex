@@ -20,6 +20,7 @@ defmodule Ndm.Application do
     Ndm.SessionManager.start_link()
     Ndm.DailiesManager.start_link()
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Bank, "Bank")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.Springs, "Springs")
 
     Supervisor.start_link(children, opts)
   end
