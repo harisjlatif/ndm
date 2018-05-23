@@ -1,8 +1,10 @@
 defmodule Ndm.HttpUtils do
 
   def login(username, password) do
-    case CookieJar.HTTPoison.post(Ndm.SessionManager.get_cookies, "http://www.neopets.com/login.phtml", {:form, [username: username, password: password]}) do
+    {:ok, jar} = CookieJar.new
+    case CookieJar.HTTPoison.post(jar, "http://www.neopets.com/login.phtml", {:form, [username: username, password: password]}) do
       {:ok, %HTTPoison.Response{status_code: 302}} ->
+        Ndm.SessionManager.put_cookie_jar(jar)
         IO.inspect("Successfully connected")
         :ok
       {:ok, %HTTPoison.Response{status_code: 200}} ->

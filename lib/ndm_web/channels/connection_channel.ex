@@ -7,7 +7,6 @@ defmodule NdmWeb.ConnectionChannel do
   ##
   def broadcast_timer_update({hour, minute, seconds, _}, module) do
     time = "Execute in: #{hour}:#{minute}:#{seconds}"
-    IO.inspect(time)
     NdmWeb.Endpoint.broadcast(@channel, "update_timer", %{module: module, time: time})
   end
 

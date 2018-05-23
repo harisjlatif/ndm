@@ -2,25 +2,56 @@ defmodule Ndm.Dailies.Bank do
   require Logger
   use GenServer
   use Timex
+  @daily "Bank"
+  @nst "America/Los_Angeles"
+
+  def execute() do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/process_bank.phtml", [type: "interest"]) do
+      _ ->
+        # Return the time that it was executed
+        get_nst()
+    end
+  end
+
+  def time_till_execution(last_execution) do
+    last_execution |> Timex.Timezone.end_of_day
+  end
 
   def start_link() do
-    Logger.debug("[Dailies] Started Bank monitor")
+    log("Started")
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
     # Every 1 seconds ping the monitor and push a new timer
     schedule_work(1000)
   end
 
+  defp broadcast_timer(last_execution) do
+    # Push the new timer to the page
+    time_till_execution(last_execution)
+    |> Timex.diff(get_nst(), :duration)
+    |> Timex.Duration.to_clock
+    |> NdmWeb.DailiesChannel.broadcast_timer_update(@daily)
+  end
+
+  defp last_modified_expired?(last_execution) do
+    Timex.before?(time_till_execution(last_execution), get_nst())
+  end
+
+  defp get_nst() do
+    Timex.now(@nst)
+  end
+
   def handle_info({:work, interval}, state) do
     state = if (Ndm.SessionManager.get_cookies != nil) do
-      case Map.get(state, :lastmodified) do
+      case Map.get(state, :last_execution) do
         nil ->
-          Map.put(state, :lastmodified, process_interest())
-        lastmodified ->
-          if (Timex.before?(lastmodified |> Timex.Timezone.end_of_day, Timex.now("America/Los_Angeles"))) do
-            Logger.debug("[Daily] [Bank] New day has arrived, ressetting last modified")
-            Map.delete(state, :lastmodified)
+          log("Processing")
+          Map.put(state, :last_execution, execute())
+          last_execution ->
+          if (last_modified_expired?(last_execution)) do
+            log("Timer has expired, resetting last modified")
+            Map.delete(state, :last_execution)
           else
-            broadcast_timer()
+            broadcast_timer(last_execution)
             state
           end
       end
@@ -32,23 +63,11 @@ defmodule Ndm.Dailies.Bank do
     {:noreply, state}
   end
 
-  defp broadcast_timer() do
-    # Push the new timer to the page
-    Timex.now("America/Los_Angeles")
-    |> Timex.Timezone.end_of_day
-    |> Timex.diff(Timex.now("America/Los_Angeles"), :duration)
-    |> Timex.Duration.to_clock
-    |> NdmWeb.DailiesChannel.broadcast_timer_update("Bank")
-  end
-
   defp schedule_work(interval) do
     Process.send_after(__MODULE__, {:work, interval}, interval)
   end
 
-  def process_interest() do
-    Logger.info("[Daily] [Bank] Processing")
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/process_bank.phtml", [type: "interest"]) do
-      _ -> Timex.now("America/Chicago")
-    end
+  defp log(msg) do
+    Logger.info("[Dailies] [#{@daily}] #{msg}")
   end
 end

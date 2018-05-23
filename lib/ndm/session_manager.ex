@@ -41,9 +41,7 @@ defmodule Ndm.SessionManager do
     Agent.get(__MODULE__, fn c -> Map.get(c, :bank) end)
   end
 
-  def new_cookie_jar() do
-    Logger.debug("Creating new cookie jar")
-    {:ok, jar} = CookieJar.new
+  def put_cookie_jar(jar) do
     Agent.update(__MODULE__, fn c -> Map.put(c, :jar, jar) end)
   end
 end
