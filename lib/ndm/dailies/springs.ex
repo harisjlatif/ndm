@@ -7,8 +7,11 @@ defmodule Ndm.Dailies.Springs do
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/process_bank.phtml", [type: "interest"]) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/faerieland/springs.phtml", [type: "heal"]) do
       _ ->
+        # Parse the response and send it
+
+        #
         # Return the time that it was executed
         get_nst()
     end

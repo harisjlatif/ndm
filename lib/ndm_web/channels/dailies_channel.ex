@@ -10,6 +10,11 @@ defmodule NdmWeb.DailiesChannel do
     NdmWeb.Endpoint.broadcast(@channel, "update_timer", %{name: name, time: time})
   end
 
+  def broadcast_lastresult_update({hour, minute, seconds, _}, lastresult) do
+    time = "Execute in: #{hour}:#{minute}:#{seconds}"
+    NdmWeb.Endpoint.broadcast(@channel, "update_timer", %{name: name, lastresult: lastresult})
+  end
+
   ##
   # Socket Join Handlers
   ##

@@ -1,9 +1,9 @@
-defmodule Ndm.Dailies.Springs do
+defmodule Ndm.Dailies.Bank do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "Springs"
+  @daily "Bank"
   @nst "America/Los_Angeles"
 
   def execute() do

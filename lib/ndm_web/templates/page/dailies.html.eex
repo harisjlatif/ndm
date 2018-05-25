@@ -18,13 +18,15 @@
                                             <tr>
                                                 <th>Name</th>
                                                 <th>Status</th>
+                                                <th>Last Result</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <%= for x <- Ndm.DailiesManager.get_dailies() do %>
                                             <tr>
                                                 <td><%= Map.get(x, :name) %></td>
-                                                <td><div id="<%= Map.get(x, :name) %>">Not Running</div></td>
+                                                <td><div id="<%= Map.get(x, :name) %>_time">Not Running</div></td>
+                                                <td><div id="<%= Map.get(x, :name) %>_lastresult"><%=Map.get(x, :lastresult)%></div></td>
                                             </tr>
                                             <% end %>
                                         </tbody>
