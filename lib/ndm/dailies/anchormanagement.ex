@@ -1,15 +1,30 @@
-defmodule Ndm.Dailies.Bank do
+defmodule Ndm.Dailies.AnchorManagement do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "Bank"
+  @daily "AnchorManagement"
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/process_bank.phtml", [type: "interest"]) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/anchormanagement.phtml") do
+      {:ok, response} ->
+        msg = Floki.parse(response.body) |> Floki.find(".content")
+        if (String.contains?(msg |> Floki.text, "back for more")) do
+          "Feel free to come back tomorrow, though, because... well, you never know."
+        else
+          input_id = Floki.parse(response.body) |> Floki.find("#btn-fire") |> Floki.find("input") |> Floki.attribute("value") |> Floki.text
+          case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/anchormanagement.phtml", [action: input_id]) do
+            {:ok, fire_response} ->
+              Floki.parse(fire_response.body) |> Floki.find(".prize-info") |> Floki.text
+            {:error, fire_response} ->
+              IO.inspect(fire_response)
+              "Error in processing #{@daily}"
+          end
+        end
+        |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+        get_nst()
       _ ->
-        # Return the time that it was executed
         get_nst()
     end
   end

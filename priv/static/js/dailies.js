@@ -12,6 +12,11 @@ $(document).ready(function() {
 
     // A special case topic for the settings page
     gChannel.on("update_timer", function(_ref) {
-        $("#" + _ref.name).text(_ref.time);
+        $("#" + _ref.name + "_time").text(_ref.time);
+    });
+
+    // A special case topic for the settings page
+    gChannel.on("update_lastresult", function(_ref) {
+        $("#" + _ref.name + "_lastresult").text(_ref.lastresult);
     });
 });

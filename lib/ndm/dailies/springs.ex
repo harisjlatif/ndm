@@ -1,21 +1,29 @@
-defmodule Ndm.Dailies.Bank do
+defmodule Ndm.Dailies.Springs do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "Bank"
+  @daily "Springs"
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/process_bank.phtml", [type: "interest"]) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/faerieland/springs.phtml", [type: "heal"]) do
+      {:ok, response} ->
+        msg = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p")
+        if (String.contains?(msg |> Floki.text, "Please try back later")) do
+          "Sorry! My magic is not fully restored yet. Please try back later."
+        else
+          List.first(msg) |> Floki.text
+        end
+        |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+        get_nst()
       _ ->
-        # Return the time that it was executed
         get_nst()
     end
   end
 
   def time_till_execution(last_execution) do
-    last_execution |> Timex.Timezone.end_of_day
+    last_execution |> Timex.shift(minutes: 31)
   end
 
   def start_link() do

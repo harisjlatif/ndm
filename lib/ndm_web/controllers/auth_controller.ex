@@ -65,7 +65,6 @@ defmodule NdmWeb.AuthController do
   and allow the user to try and re-login.
   """
   def create(conn, %{"login" => %{"username" => username, "password" => password}}) do
-    Ndm.SessionManager.new_cookie_jar()
     # Check if the credentials provided at login page are valid
     case authenticate(username, password) do
       :user ->

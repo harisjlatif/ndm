@@ -1,15 +1,23 @@
-defmodule Ndm.Dailies.Bank do
+defmodule Ndm.Dailies.Jelly do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "Bank"
+  @daily "Jelly"
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/process_bank.phtml", [type: "interest"]) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/jelly/jelly.phtml", [type: "get_jelly"]) do
+      {:ok, response} ->
+        msg = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p")
+        if (String.contains?(msg |> Floki.text, "You cannot take more than one jelly per day")) do
+          "The Jelly Keeper shouts 'NO! You cannot take more than one jelly per day!'"
+        else
+          List.first(msg) |> Floki.text
+        end
+        |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+        get_nst()
       _ ->
-        # Return the time that it was executed
         get_nst()
     end
   end

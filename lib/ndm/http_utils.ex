@@ -1,8 +1,10 @@
 defmodule Ndm.HttpUtils do
 
   def login(username, password) do
-    case CookieJar.HTTPoison.post(Ndm.SessionManager.get_cookies, "http://www.neopets.com/login.phtml", {:form, [username: username, password: password]}) do
+    {:ok, jar} = CookieJar.new
+    case CookieJar.HTTPoison.post(jar, "http://www.neopets.com/login.phtml", {:form, [username: username, password: password]}) do
       {:ok, %HTTPoison.Response{status_code: 302}} ->
+        Ndm.SessionManager.put_cookie_jar(jar)
         IO.inspect("Successfully connected")
         :ok
       {:ok, %HTTPoison.Response{status_code: 200}} ->
@@ -13,7 +15,7 @@ defmodule Ndm.HttpUtils do
         IO.inspect("Unhandled request")
         :error
       {:error, _response} ->
-        IO.inspect("Unable to connect")
+        IO.inspect("Unable to connect to login")
         :error
     end
   end
@@ -24,14 +26,13 @@ defmodule Ndm.HttpUtils do
         :loggedout
       jar ->
         case CookieJar.HTTPoison.get(jar, url) do
-          {:ok, response = %HTTPoison.Response{status_code: 200}} ->
+          {:ok, response} ->
             handle_response(response)
             {:ok, response}
           {:error, response} ->
-            IO.inspect("Unable to connect")
+            IO.inspect("Error trying to access url #{url}")
             {:error, response}
         end
-        :ok
     end
   end
 
@@ -40,16 +41,25 @@ defmodule Ndm.HttpUtils do
       {:ok, response = %HTTPoison.Response{status_code: 200}} ->
         handle_response(response)
         {:ok, response}
-      {:ok, response = %HTTPoison.Response{request_url: "http://www.neopets.com/process_bank.phtml"}} ->
+      {:error, response} ->
+        IO.inspect("Unable to connect #{url}")
+        {:error, response}
+    end
+  end
+
+  def visit_url(url, params, headers) do
+    case CookieJar.HTTPoison.post(Ndm.SessionManager.get_cookies, url, {:form, params}, headers) do
+      {:ok, response = %HTTPoison.Response{status_code: 200}} ->
+        handle_response(response)
         {:ok, response}
       {:error, response} ->
-        IO.inspect("Unable to connect")
+        IO.inspect("Unable to connect #{url}")
         {:error, response}
     end
   end
 
   def handle_response(response) do
-    response |> update_np |> update_bank
+    response |> update_np |> update_bank |> update_till
   end
 
   def update_np(response) do
@@ -61,6 +71,13 @@ defmodule Ndm.HttpUtils do
     if (response.request_url == "http://www.neopets.com/bank.phtml") do
       [first, _second] = Floki.parse(response.body) |> Floki.find(".contentModuleContent") |> Floki.find("form") |> Floki.find("td + td") |> Floki.find("b")
       Ndm.SessionManager.put(:bank, Floki.text(first))
+    end
+    response
+  end
+
+  def update_till(response) do
+    if (response.request_url == "http://www.neopets.com/market.phtml?type=till") do
+      Ndm.SessionManager.put(:till, Floki.parse(response.body) |> Floki.find(".content > p > b") |> Floki.text)
     end
     response
   end
