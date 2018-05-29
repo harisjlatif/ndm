@@ -1,19 +1,26 @@
-defmodule Ndm.Dailies.Springs do
+defmodule Ndm.Dailies.AnchorManagement do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "Springs"
+  @daily "AnchorManagement"
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/faerieland/springs.phtml", [type: "heal"]) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/anchormanagement.phtml") do
       {:ok, response} ->
-        msg = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p")
-        if (String.contains?(msg |> Floki.text, "Please try back later")) do
-          "Sorry! My magic is not fully restored yet. Please try back later."
+        msg = Floki.parse(response.body) |> Floki.find(".content")
+        if (String.contains?(msg |> Floki.text, "back for more")) do
+          "Feel free to come back tomorrow, though, because... well, you never know."
         else
-          List.first(msg) |> Floki.text
+          input_id = Floki.parse(response.body) |> Floki.find("#btn-fire") |> Floki.find("input") |> Floki.attribute("value") |> Floki.text
+          case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/anchormanagement.phtml", [action: input_id]) do
+            {:ok, fire_response} ->
+              Floki.parse(fire_response.body) |> Floki.find(".prize-info") |> Floki.text
+            {:error, fire_response} ->
+              IO.inspect(fire_response)
+              "Error in processing #{@daily}"
+          end
         end
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
@@ -23,7 +30,7 @@ defmodule Ndm.Dailies.Springs do
   end
 
   def time_till_execution(last_execution) do
-    last_execution |> Timex.shift(minutes: 31)
+    last_execution |> Timex.Timezone.end_of_day
   end
 
   def start_link() do

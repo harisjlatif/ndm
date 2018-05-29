@@ -1,29 +1,30 @@
-defmodule Ndm.Dailies.WheelOfFortune do
+defmodule Ndm.Dailies.FruitMachine do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "WheelOfFortune"
+  @daily "FruitMachine"
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/faerieland/springs.phtml", [type: "heal"]) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/desert/fruit/index.phtml", []) do
       {:ok, response} ->
-        msg = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p")
-        if (String.contains?(msg |> Floki.text, "Please try back later")) do
-          "Sorry! My magic is not fully restored yet. Please try back later."
+        msg = Floki.parse(response.body) |> Floki.find(".content")
+        if (String.contains?(msg |> Floki.text, "Try again tomorrow... if you really want to take the risk again")) do
+          "Try again tomorrow... if you really want to take the risk again"
         else
           List.first(msg) |> Floki.text
         end
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
       _ ->
+        log("Unable to execute")
         get_nst()
     end
   end
 
   def time_till_execution(last_execution) do
-    last_execution |> Timex.shift(minutes: 31)
+    last_execution |> Timex.Timezone.end_of_day
   end
 
   def start_link() do

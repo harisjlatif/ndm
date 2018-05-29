@@ -10,9 +10,9 @@ defmodule NdmWeb.DailiesChannel do
     NdmWeb.Endpoint.broadcast(@channel, "update_timer", %{name: name, time: time})
   end
 
-  def broadcast_lastresult_update({hour, minute, seconds, _}, lastresult) do
-    time = "Execute in: #{hour}:#{minute}:#{seconds}"
-    NdmWeb.Endpoint.broadcast(@channel, "update_timer", %{name: name, lastresult: lastresult})
+  def broadcast_lastresult_update(lastresult, name) do
+    Ndm.DailiesManager.update_daily_result(name, lastresult)
+    NdmWeb.Endpoint.broadcast(@channel, "update_lastresult", %{name: name, lastresult: lastresult})
   end
 
   ##

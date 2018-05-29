@@ -33,7 +33,6 @@ defmodule Ndm.HttpUtils do
             IO.inspect("Unable to connect")
             {:error, response}
         end
-        :ok
     end
   end
 
@@ -51,7 +50,7 @@ defmodule Ndm.HttpUtils do
   end
 
   def handle_response(response) do
-    response |> update_np |> update_bank
+    response |> update_np |> update_bank |> update_till
   end
 
   def update_np(response) do
@@ -63,6 +62,13 @@ defmodule Ndm.HttpUtils do
     if (response.request_url == "http://www.neopets.com/bank.phtml") do
       [first, _second] = Floki.parse(response.body) |> Floki.find(".contentModuleContent") |> Floki.find("form") |> Floki.find("td + td") |> Floki.find("b")
       Ndm.SessionManager.put(:bank, Floki.text(first))
+    end
+    response
+  end
+
+  def update_till(response) do
+    if (response.request_url == "http://www.neopets.com/market.phtml?type=till") do
+      Ndm.SessionManager.put(:till, Floki.parse(response.body) |> Floki.find(".content > p > b") |> Floki.text)
     end
     response
   end

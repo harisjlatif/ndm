@@ -15,6 +15,7 @@
     <ul class="nav navbar-nav navbar-left navbar-top-links">
         <li><a href="#"><i class="fa fa-dollar fa-fw"></i> <%=Ndm.SessionManager.get_neopoints()%></a></li>
         <li><a href="#"><i class="fa fa-university fa-fw"></i> <%=Ndm.SessionManager.get_bank()%></a></li>
+        <li><a href="#"><i class="fa fa-shopping-cart fa-fw"></i> <%=Ndm.SessionManager.get_till()%></a></li>
     </ul>
 
     <ul class="nav navbar-right navbar-top-links">

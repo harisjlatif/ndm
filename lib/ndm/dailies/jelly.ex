@@ -1,17 +1,17 @@
-defmodule Ndm.Dailies.Springs do
+defmodule Ndm.Dailies.Jelly do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "Springs"
+  @daily "Jelly"
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/faerieland/springs.phtml", [type: "heal"]) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/jelly/jelly.phtml", [type: "get_jelly"]) do
       {:ok, response} ->
         msg = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p")
-        if (String.contains?(msg |> Floki.text, "Please try back later")) do
-          "Sorry! My magic is not fully restored yet. Please try back later."
+        if (String.contains?(msg |> Floki.text, "You cannot take more than one jelly per day")) do
+          "The Jelly Keeper shouts 'NO! You cannot take more than one jelly per day!'"
         else
           List.first(msg) |> Floki.text
         end
@@ -23,7 +23,7 @@ defmodule Ndm.Dailies.Springs do
   end
 
   def time_till_execution(last_execution) do
-    last_execution |> Timex.shift(minutes: 31)
+    last_execution |> Timex.Timezone.end_of_day
   end
 
   def start_link() do

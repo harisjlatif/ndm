@@ -6,7 +6,7 @@ defmodule Ndm.SessionManager do
   Starts a new bucket.
   """
   def start_link() do
-    map = %{:neopoints => "N/A", :bank => "N/A"}
+    map = %{:neopoints => "N/A", :bank => "N/A", :till => "N/A"}
     Agent.start_link(fn -> map end, name: __MODULE__)
   end
 
@@ -39,6 +39,10 @@ defmodule Ndm.SessionManager do
 
   def get_bank() do
     Agent.get(__MODULE__, fn c -> Map.get(c, :bank) end)
+  end
+
+  def get_till() do
+    Agent.get(__MODULE__, fn c -> Map.get(c, :till) end)
   end
 
   def put_cookie_jar(jar) do

@@ -21,6 +21,12 @@ defmodule Ndm.Application do
     Ndm.DailiesManager.start_link()
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Bank, "Bank")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Springs, "Springs")
+    #Ndm.DailiesManager.add_daily(Ndm.Dailies.WheelOfFortune, "WheelOfFortune")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.Omlette, "Omlette")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.Jelly, "Jelly")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.AppleBobbing, "AppleBobbing")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.AnchorManagement, "AnchorManagement")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.Tombola, "Tombola")
 
     Supervisor.start_link(children, opts)
   end

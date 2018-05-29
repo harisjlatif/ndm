@@ -8,7 +8,8 @@ defmodule NdmWeb.PageController do
         |> Guardian.Plug.sign_out
         |> put_flash(:info, "Logged out")
         |> redirect(to: "/")
-      :ok ->
+      {:ok, _response} ->
+        Ndm.HttpUtils.visit_url("http://www.neopets.com/market.phtml?type=till")
         render conn, "index.html"
     end
   end
@@ -20,7 +21,7 @@ defmodule NdmWeb.PageController do
         |> Guardian.Plug.sign_out
         |> put_flash(:info, "Logged out")
         |> redirect(to: "/")
-      :ok ->
+      {:ok, _response} ->
         render conn, "dailies.html"
     end
   end

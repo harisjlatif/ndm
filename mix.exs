@@ -42,7 +42,8 @@ defmodule Ndm.Mixfile do
       {:floki, "~> 0.18.0"},
       {:cookie_jar, "~> 1.0"},
       {:guardian, "~> 0.14.5"},
-      {:timex, "~> 3.1"}
+      {:timex, "~> 3.1"},
+      {:poison, "~> 3.1"}
     ]
   end
 end
