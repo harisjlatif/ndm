@@ -81,4 +81,8 @@ defmodule Ndm.Dailies.Tombola do
   defp log(msg) do
     Logger.info("[Dailies] [#{@daily}] #{msg}")
   end
+
+  def init(args) do
+    {:ok, args}
+  end
 end
