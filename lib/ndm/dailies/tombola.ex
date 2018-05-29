@@ -7,10 +7,11 @@ defmodule Ndm.Dailies.Tombola do
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/island/tombola2.phtml", []) do
+    headers = ["Referer": "http://www.neopets.com/island/tombola.phtml"]
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/island/tombola2.phtml", [], headers) do
       {:ok, response} ->
         msg = Floki.parse(response.body) |> Floki.find(".content")
-        if (String.contains?(msg |> Floki.text, "Oops! Sorry, you are only allowed one Tombola free spin every day")) do
+        if (String.contains?(msg |> Floki.text, "Oops!")) do
           "Oops! Sorry, you are only allowed one Tombola free spin every day"
         else
           List.first(msg) |> Floki.text

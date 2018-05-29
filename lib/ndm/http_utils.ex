@@ -15,7 +15,7 @@ defmodule Ndm.HttpUtils do
         IO.inspect("Unhandled request")
         :error
       {:error, _response} ->
-        IO.inspect("Unable to connect")
+        IO.inspect("Unable to connect to login")
         :error
     end
   end
@@ -26,11 +26,11 @@ defmodule Ndm.HttpUtils do
         :loggedout
       jar ->
         case CookieJar.HTTPoison.get(jar, url) do
-          {:ok, response = %HTTPoison.Response{status_code: 200}} ->
+          {:ok, response} ->
             handle_response(response)
             {:ok, response}
           {:error, response} ->
-            IO.inspect("Unable to connect")
+            IO.inspect("Error trying to access url #{url}")
             {:error, response}
         end
     end
@@ -41,10 +41,19 @@ defmodule Ndm.HttpUtils do
       {:ok, response = %HTTPoison.Response{status_code: 200}} ->
         handle_response(response)
         {:ok, response}
-      {:ok, response = %HTTPoison.Response{request_url: "http://www.neopets.com/process_bank.phtml"}} ->
+      {:error, response} ->
+        IO.inspect("Unable to connect #{url}")
+        {:error, response}
+    end
+  end
+
+  def visit_url(url, params, headers) do
+    case CookieJar.HTTPoison.post(Ndm.SessionManager.get_cookies, url, {:form, params}, headers) do
+      {:ok, response = %HTTPoison.Response{status_code: 200}} ->
+        handle_response(response)
         {:ok, response}
       {:error, response} ->
-        IO.inspect("Unable to connect")
+        IO.inspect("Unable to connect #{url}")
         {:error, response}
     end
   end

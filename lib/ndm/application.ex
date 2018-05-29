@@ -27,6 +27,7 @@ defmodule Ndm.Application do
     Ndm.DailiesManager.add_daily(Ndm.Dailies.AppleBobbing, "AppleBobbing")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.AnchorManagement, "AnchorManagement")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Tombola, "Tombola")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.Tomb, "Tomb")
 
     Supervisor.start_link(children, opts)
   end
