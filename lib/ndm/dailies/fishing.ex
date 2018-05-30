@@ -1,32 +1,22 @@
-defmodule Ndm.Dailies.FruitMachine do
+defmodule Ndm.Dailies.Fishing do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "FruitMachine"
+  @daily "Fishing"
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/desert/fruit/index.phtml") do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/water/fishing.phtml", [go_fish: "1"]) do
       {:ok, response} ->
-        msg = Floki.parse(response.body) |> Floki.find(".content")
-        if (String.contains?(msg |> Floki.text, "You've already had your free spin for today")) do
-          "You've already had your free spin for today. Please come back tomorrow and try again." |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
-          get_nst()
-        else
-          [spin, ck, _] = msg |> Floki.find(".result") |> Floki.attribute("input", "value")
-          case Ndm.HttpUtils.visit_url("http://www.neopets.com/desert/fruit/index.phtml", [spin: spin, ck: ck]) do
-            {:ok, play_response} ->
-              get_nst()
-              Floki.parse(play_response) |> Floki.find("#fruitResult") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
-            _ ->
-              log("Unable to execute")
-              nil
-          end
-        end
+        Floki.parse(response.body)
+        |> Floki.find(".content")
+        |> Floki.find("center")
+        |> Floki.text
+        |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+        get_nst()
       _ ->
-        log("Unable to execute")
-        nil
+        get_nst()
     end
   end
 

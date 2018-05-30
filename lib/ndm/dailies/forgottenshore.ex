@@ -10,7 +10,7 @@ defmodule Ndm.Dailies.ForgottenShore do
     case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/forgottenshore.phtml") do
       {:ok, response} ->
         msg = Floki.parse(response.body) |> Floki.find(".content")
-        if (String.contains?(msg |> Floki.text, "You've already searched the coast for treasure today.")) do
+        if (String.contains?(msg |> Floki.text, "You've already searched the coast for treasure today")) do
           "You've already searched the coast for treasure today. Perhaps you should try again tomorrow."
         else
           Floki.parse(response.body) |> Floki.find(".content") |> Floki.text
