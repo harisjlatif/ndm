@@ -17,8 +17,8 @@ defmodule Ndm.Dailies.FruitMachine do
           [spin, ck, _] = msg |> Floki.find(".result") |> Floki.attribute("input", "value")
           case Ndm.HttpUtils.visit_url("http://www.neopets.com/desert/fruit/index.phtml", [spin: spin, ck: ck]) do
             {:ok, play_response} ->
+              Floki.parse(play_response.body) |> Floki.find("#fruitResult") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
               get_nst()
-              Floki.parse(play_response) |> Floki.find("#fruitResult") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
             _ ->
               log("Unable to execute")
               nil

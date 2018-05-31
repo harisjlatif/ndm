@@ -23,6 +23,9 @@ defmodule NdmWeb.PageController do
         |> redirect(to: "/")
       {:ok, _response} ->
         render conn, "dailies.html"
+      {:error, _} ->
+        IO.puts("Unable to visit bank, maybe time out")
+        render conn, "dailies.html"
     end
   end
 end

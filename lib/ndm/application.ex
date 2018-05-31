@@ -30,6 +30,7 @@ defmodule Ndm.Application do
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Springs, "Springs")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Tomb, "Tomb")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Tombola, "Tombola")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.TDMBGPOP, "TDMBGPOP")
     #Ndm.DailiesManager.add_daily(Ndm.Dailies.WheelOfFortune, "WheelOfFortune")
 
     Supervisor.start_link(children, opts)

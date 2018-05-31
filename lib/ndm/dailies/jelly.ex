@@ -9,11 +9,15 @@ defmodule Ndm.Dailies.Jelly do
   def execute() do
     case Ndm.HttpUtils.visit_url("http://www.neopets.com/jelly/jelly.phtml", [type: "get_jelly"]) do
       {:ok, response} ->
-        msg = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p")
-        if (String.contains?(msg |> Floki.text, "You cannot take more than one jelly per day")) do
-          "The Jelly Keeper shouts 'NO! You cannot take more than one jelly per day!'"
-        else
-          List.first(msg) |> Floki.text
+        parsed_body = Floki.parse(response.body)
+        content_msg = parsed_body |> Floki.find(".content") |> Floki.text
+        cond do
+          String.contains?(content_msg, "You cannot take more than one jelly per day") ->
+            "The Jelly Keeper shouts 'NO! You cannot take more than one jelly per day!'"
+          String.contains?(content_msg, "The Jelly has been eaten") ->
+            "The Jelly has been eaten :(. I am sure there is more on the way, why don't you check back soon!"
+          true ->
+            parsed_body |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p") |> List.first |> Floki.text
         end
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()

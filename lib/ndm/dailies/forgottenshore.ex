@@ -9,16 +9,35 @@ defmodule Ndm.Dailies.ForgottenShore do
   def execute() do
     case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/forgottenshore.phtml") do
       {:ok, response} ->
+        # Check if we've visited already today
         msg = Floki.parse(response.body) |> Floki.find(".content")
         if (String.contains?(msg |> Floki.text, "You've already searched the coast for treasure today")) do
           "You've already searched the coast for treasure today. Perhaps you should try again tomorrow."
+          |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         else
-          Floki.parse(response.body) |> Floki.find(".content") |> Floki.text
+          # First time today
+          if (String.contains?(msg |> Floki.text, "but there's nothing of interest to be found today")) do
+            "A deserted shore stretches along in front of you, but there's nothing of interest to be found today."
+            |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+          else
+            url = msg |> Floki.find("#shore_back") |> Floki.find("a") |> Floki.attribute("href") |> Floki.text
+            if (String.contains?(url, "confirm")) do
+              case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/forgottenshore.phtml#{url}") do
+                {:ok, confirm_response} ->
+                  Floki.parse(confirm_response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.text
+                  |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+                _ ->
+                  nil
+              end
+            else
+              msg |> Floki.find("#shore_back")
+              |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+            end
+          end
         end
-        |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
       _ ->
-        get_nst()
+        nil
     end
   end
 
