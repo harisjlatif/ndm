@@ -25,7 +25,8 @@ defmodule Ndm.Dailies.AnchorManagement do
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
       _ ->
-        get_nst()
+        log("error running execute")
+        nil
     end
   end
 

@@ -37,6 +37,7 @@ defmodule Ndm.Dailies.ForgottenShore do
         end
         get_nst()
       _ ->
+        log("error running execute")
         nil
     end
   end

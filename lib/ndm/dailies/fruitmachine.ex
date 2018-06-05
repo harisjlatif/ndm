@@ -20,12 +20,12 @@ defmodule Ndm.Dailies.FruitMachine do
               Floki.parse(play_response.body) |> Floki.find("#fruitResult") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
               get_nst()
             _ ->
-              log("Unable to execute")
+              log("error running execute play")
               nil
           end
         end
       _ ->
-        log("Unable to execute")
+        log("error running execute")
         nil
     end
   end

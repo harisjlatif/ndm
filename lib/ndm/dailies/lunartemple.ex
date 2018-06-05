@@ -1,22 +1,34 @@
-defmodule Ndm.Dailies.Omlette do
+defmodule Ndm.Dailies.LunarTemple do
   require Logger
   use GenServer
   use Timex
   @interval 2000
-  @daily "Omlette"
+  @daily "LunarTemple"
   @nst "America/Los_Angeles"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/prehistoric/omelette.phtml", [type: "get_omelette"]) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/shenkuu/lunar/?show=puzzle") do
       {:ok, response} ->
-        msg = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p")
-        if (String.contains?(msg |> Floki.text, "You cannot take more than one slice per day")) do
-          "Sabre-X growls 'NO! You cannot take more than one slice per day!."
+        msg = Floki.parse(response.body) |> Floki.find(".content")
+        if (String.contains?(msg |> Floki.text, "Please try again tomorrow")) do
+          "The wise Gnorbu says: 'You may only attempt my challenge once per day. Please try again tomorrow!'"
+          |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+          get_nst()
         else
-          List.first(msg) |> Floki.text
+          text = msg |> Floki.find("div script:nth-child(2)") |> Floki.text([js: true])
+          found_angle_string = Regex.run(~r/angleKreludor=\d\d\d/, text) |> Floki.text |> String.trim("angleKreludor=")
+          {angle, _} = Integer.parse(found_angle_string)
+          selection = to_string(trunc(Float.round(angle/22.5)))
+
+          case Ndm.HttpUtils.visit_url("http://www.neopets.com/shenkuu/lunar/results.phtml", [submitted: "true", phase_choice: selection]) do
+            {:ok, submit_response} ->
+              Floki.parse(submit_response.body) |> Floki.find(".content") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+              get_nst()
+            _ ->
+              log("error running execute")
+              nil
+          end
         end
-        |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
-        get_nst()
       _ ->
         log("error running execute")
         nil

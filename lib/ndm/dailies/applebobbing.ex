@@ -18,6 +18,7 @@ defmodule Ndm.Dailies.AppleBobbing do
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
       _ ->
+        log("error running execute")
         nil
     end
   end

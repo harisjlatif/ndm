@@ -18,8 +18,8 @@ defmodule Ndm.Dailies.Tomb do
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
       _ ->
-        log("Unable to execute")
-        get_nst()
+        log("error running execute")
+        nil
     end
   end
 

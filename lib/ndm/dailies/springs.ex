@@ -18,6 +18,7 @@ defmodule Ndm.Dailies.Springs do
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
       _ ->
+        log("error running execute")
         get_nst()
     end
   end

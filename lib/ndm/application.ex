@@ -26,6 +26,7 @@ defmodule Ndm.Application do
     Ndm.DailiesManager.add_daily(Ndm.Dailies.ForgottenShore, "ForgottenShore")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.FruitMachine, "FruitMachine")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Jelly, "Jelly")
+    Ndm.DailiesManager.add_daily(Ndm.Dailies.LunarTemple, "LunarTemple")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Omlette, "Omlette")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Springs, "Springs")
     Ndm.DailiesManager.add_daily(Ndm.Dailies.Tomb, "Tomb")
