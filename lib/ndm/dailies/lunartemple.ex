@@ -22,7 +22,7 @@ defmodule Ndm.Dailies.LunarTemple do
           angle = trunc(Float.round(angle_float / 22.5))
 
           log("Determined #{angle} for #{found_angle_string} as the answer")
-          case Ndm.HttpUtils.visit_url("http://www.neopets.com/shenkuu/lunar/results.phtml", [submitted: "true", phase_choice: selection]) do
+          case Ndm.HttpUtils.visit_url("http://www.neopets.com/shenkuu/lunar/results.phtml", [submitted: "true", phase_choice: angle]) do
             {:ok, submit_response} ->
               Floki.parse(submit_response.body) |> Floki.find(".content") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
               get_nst()
