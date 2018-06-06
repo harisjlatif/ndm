@@ -16,17 +16,45 @@ defmodule Ndm.Dailies.LunarTemple do
           get_nst()
         else
           text = msg |> Floki.find("div script:nth-child(2)") |> Floki.text([js: true])
-          found_angle_string = Regex.run(~r/angleKreludor=\d\d\d/, text) |> Floki.text |> String.trim("angleKreludor=")
-          {angle, _} = Integer.parse(found_angle_string)
-          selection = to_string(trunc(Float.round(angle/22.5)))
+          found_angle_string = Regex.run(~r/angleKreludor=[+-]?([0-9]*[.])?[0-9]+&/, text) |> Floki.text |> String.trim("angleKreludor=")
 
-          case Ndm.HttpUtils.visit_url("http://www.neopets.com/shenkuu/lunar/results.phtml", [submitted: "true", phase_choice: selection]) do
-            {:ok, submit_response} ->
-              Floki.parse(submit_response.body) |> Floki.find(".content") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
-              get_nst()
-            _ ->
-              log("error running execute")
-              nil
+          {angle_float, _} = Float.parse(found_angle_string)
+          angle = trunc(Float.round(angle_float / 22.5))
+
+          selection = case angle do
+            x when x in 0..11 -> 1
+            x when x in 12..33 -> 2
+            x when x in 34..56 -> 3
+            x when x in 57..78 -> 4
+            x when x in 79..101 -> 5
+            x when x in 102..123 -> 6
+            x when x in 124..146 -> 7
+            x when x in 147..168 -> 8
+            x when x in 169..191 -> 9
+            x when x in 192..213 -> 10
+            x when x in 214..236 -> 11
+            x when x in 237..258 -> 12
+            x when x in 259..281 -> 13
+            x when x in 282..303 -> 14
+            x when x in 304..326 -> 15
+            x when x in 327..348 -> 16
+            x when x in 349..360 -> 1
+            _ -> 0
+          end
+
+          if (selection != 0) do
+            log("Determined #{selection} for #{angle} as the answer")
+            case Ndm.HttpUtils.visit_url("http://www.neopets.com/shenkuu/lunar/results.phtml", [submitted: "true", phase_choice: selection]) do
+              {:ok, submit_response} ->
+                Floki.parse(submit_response.body) |> Floki.find(".content") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+                get_nst()
+              _ ->
+                log("error running execute")
+                nil
+            end
+          else
+            log("Unable to determine value for lunar temple")
+            nil
           end
         end
       _ ->
