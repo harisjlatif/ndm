@@ -16,7 +16,7 @@ defmodule Ndm.Dailies.LunarTemple do
           get_nst()
         else
           text = msg |> Floki.find("div script:nth-child(2)") |> Floki.text([js: true])
-          found_angle_string = Regex.run(~r/angleKreludor=[+-]?([0-9]*[.])?[0-9]+&/, text) |> Floki.text |> String.trim("angleKreludor=")
+          found_angle_string = Regex.run(~r/angleKreludor=[+-]?([0-9]*[.])?[0-9]+&/, text) |> Floki.text |> String.trim("angleKreludor=") |> String.trim("&")
 
           {angle_float, _} = Float.parse(found_angle_string)
           angle = trunc(Float.round(angle_float / 22.5))
