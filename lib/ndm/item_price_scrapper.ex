@@ -26,20 +26,24 @@ defmodule Ndm.ItemPriceScrapper do
                 price_high: "",shop: "", search_order: "price", sort: "asc", lim: "100",
                 st: st_value]
 
-         {_, response} = HTTPoison.post("http://www.neocodex.us/forum/index.php", {:form, params})
+        case HTTPoison.post("http://www.neocodex.us/forum/index.php", {:form, params}) do
+          {:error, _} ->
+            IO.inspect("Error")
+          {:ok, response}->
+            item_list_floki =
+            Floki.parse(response.body) |> Floki.find(".general_box") |> Floki.find(".ipsList_inline") |> Floki.find("li")
 
-        item_list_floki =
-          Floki.parse(response.body) |> Floki.find(".general_box") |> Floki.find(".ipsList_inline") |> Floki.find("li")
+            item_price_map =
+              Enum.reduce(item_list_floki, %{}, fn x, acc ->
+                item_name = Floki.find(x, ".desc") |> Floki.find("a") |> Floki.text |> String.trim
+                item_price = Floki.find(x, ".desc") |> Floki.find(".idbQuickPrice") |> Floki.text
+                Map.put(acc, item_name, item_price)
+              end)
 
-        item_price_map = Enum.reduce(item_list_floki, %{}, fn x, acc ->
-          item_name = Floki.find(x, ".desc") |> Floki.find("a") |> Floki.text |> String.trim
-          item_price = Floki.find(x, ".desc") |> Floki.find(".idbQuickPrice") |> Floki.text
-          Map.put(acc, item_name, item_price)
-        end)
+            IO.puts("Completed parsing page #{st_value}")
 
-        IO.puts("Completed parsing page #{st_value}")
-
-        Map.merge(acc, item_price_map)
+            Map.merge(acc, item_price_map)
+        end
       end)
   end
 end
