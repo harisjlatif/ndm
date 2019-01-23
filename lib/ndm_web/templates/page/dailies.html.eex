@@ -1,4 +1,4 @@
-<title>Telligence Dashboard</title>
+<title>NDM Dashboard</title>
 <div id="wrapper">
     <%= render NdmWeb.PageView, "navigation.html", conn: @conn %>
         <div id="page-wrapper">

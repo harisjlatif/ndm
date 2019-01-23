@@ -29,6 +29,8 @@ defmodule Ndm.ItemPriceScrapper do
         case HTTPoison.post("http://www.neocodex.us/forum/index.php", {:form, params}) do
           {:error, _} ->
             IO.inspect("Error")
+
+            Map.merge(acc, %{})
           {:ok, response}->
             item_list_floki =
             Floki.parse(response.body) |> Floki.find(".general_box") |> Floki.find(".ipsList_inline") |> Floki.find("li")

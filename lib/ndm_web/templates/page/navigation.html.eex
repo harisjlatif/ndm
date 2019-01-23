@@ -39,7 +39,17 @@
                     <a href="/index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 
-                <li><a href="/dailies.html"><i class="fa fa-info fa-fw"></i> Dailies</a></li>
+                <li>
+                    <a href="/dailies.html"><i class="fa fa-info fa-fw"></i> Dailies</a>
+                </li>
+
+                <li>
+                    <a href="/inventory.html"><i class="fa fa-info fa-fw"></i> Inventory</a>
+                </li>
+                
+                <li>
+                    <a href="/shop.html"><i class="fa fa-info fa-fw"></i> Shop</a>
+                </li>
             </ul>
         </div>
         <!-- /.sidebar-collapse -->
