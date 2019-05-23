@@ -1,4 +1,16 @@
 defmodule Ndm.ItemPriceScrapper do
+  def fill_item_prices(items) do
+    {:ok, item_prices} = get_item_prices()
+    Enum.map(items, fn x -> %{:item_name => x, :item_price => Map.get(item_prices, x)} end)
+  end
+
+  def get_item_price(item) do
+    case get_item_prices() do
+      {:ok, prices} -> Enum.find(prices, fn x -> x == item end)
+      {:error, _} -> "N/A"
+    end
+  end
+
   def get_item_prices do
     file_name_string = "price_list/#{Timex.format!(Timex.now, "items-%Y-%m.json", :strftime)}"
     case File.read(file_name_string) do
@@ -7,6 +19,7 @@ defmodule Ndm.ItemPriceScrapper do
       {:error, _} ->
         IO.inspect("File not found will create a new one.")
         File.write(file_name_string, Poison.encode!(create_item_price_file(), pretty: true))
+        Poison.decode(file_name_string)
     end
   end
 

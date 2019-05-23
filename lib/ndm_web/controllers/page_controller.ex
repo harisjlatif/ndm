@@ -10,6 +10,7 @@ defmodule NdmWeb.PageController do
         |> redirect(to: "/")
       {:ok, _response} ->
         Ndm.HttpUtils.visit_url("http://www.neopets.com/market.phtml?type=till")
+        Ndm.HttpUtils.visit_url("http://www.neopets.com/market.phtml?type=your")
         render conn, "index.html"
     end
   end
@@ -38,11 +39,11 @@ defmodule NdmWeb.PageController do
         |> put_flash(:info, "Logged out")
         |> redirect(to: "/")
       {:ok, response} ->
-          Floki.parse(response.body) |> Floki.find(".content") |> Floki.find(".inventory") |> Floki.find("td") |> Floki.text 
-          |> String.split(["\n", "(special)", "(rare)", "(uncommon)", "(MEGA RARE)", "(ultra rare)"], trim: true)
+          Floki.parse(response.body) |> Floki.find(".content") |> Floki.find(".inventory") |> Floki.find("td") |> Floki.text
+          |> String.split(["\n", "(special)", "(rare)", "(uncommon)", "(MEGA RARE)", "(ultra rare)"], trim: true) # Remove unwanted item tags
           |> Enum.reject(fn x -> x == "(special)" end)
           |> Enum.reject(fn x -> x == "(Neocash)" end)
-          |> Enum.map(fn x -> %{:item_name => x, :item_price => 0} end)
+          |> Ndm.ItemPriceScrapper.fill_item_prices
       {:error, _} ->
         IO.puts("Unable to visit inventory, maybe time out")
         %{}
@@ -51,21 +52,8 @@ defmodule NdmWeb.PageController do
     render(conn, "inventory.html", items: items)
   end
 
-#  def shop(conn, _params) do
-#    items =
-#    case Ndm.HttpUtils.visit_url("http://www.neopets.com/inventory.phtml") do
-#      :loggedout ->
-#        conn
-#        |> Guardian.Plug.sign_out
-#        |> put_flash(:info, "Logged out")
-#        |> redirect(to: "/")
-#      {:ok, response} ->
-#          
-#      {:error, _} ->
-#        IO.puts("Unable to visit shop, maybe time out")
-#        %{}
-#    end
-#
-#    render(conn, "shop.html", items: items)
-#  end
+  def shop(conn, _params) do
+    items = Ndm.ItemUtils.get_shop_items
+    render(conn, "shop.html", items: items)
+  end
 end

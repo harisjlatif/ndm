@@ -33,6 +33,14 @@ defmodule Ndm.SessionManager do
     Agent.update(__MODULE__, fn c -> Map.delete(c, :jar) end)
   end
 
+  def get_free() do
+    Agent.get(__MODULE__, fn c -> Map.get(c, :free) end)
+  end
+
+  def get_stocked() do
+    Agent.get(__MODULE__, fn c -> Map.get(c, :stocked) end)
+  end
+
   def get_neopoints() do
     Agent.get(__MODULE__, fn c -> Map.get(c, :neopoints) end)
   end

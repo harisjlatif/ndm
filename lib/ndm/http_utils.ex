@@ -25,7 +25,7 @@ defmodule Ndm.HttpUtils do
       nil ->
         :loggedout
       jar ->
-        case CookieJar.HTTPoison.get(jar, url) do
+        case CookieJar.HTTPoison.get(jar, url, [{"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"}]) do
           {:ok, response} ->
             handle_response(response)
             {:ok, response}
@@ -62,7 +62,7 @@ defmodule Ndm.HttpUtils do
   end
 
   def handle_response(response) do
-    response |> update_np |> update_bank |> update_till
+    response |> update_np |> update_bank |> update_till |> update_items_stocked
   end
 
   def update_np(response) do
@@ -83,5 +83,15 @@ defmodule Ndm.HttpUtils do
       Ndm.SessionManager.put(:till, Floki.parse(response.body) |> Floki.find(".content > p > b") |> Floki.text)
     end
     response
+  end
+
+  def update_items_stocked(response) do
+    if (response.request_url == "http://www.neopets.com/market.phtml?type=your") do
+      list = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("td p") |> Floki.find("p:fl-contains('Items')") |> Floki.find("center") |> Floki.find("b")
+      {_, _, items_stocked} = Enum.at(list, 1)
+      {_, _, free_space} = Enum.at(list, 2)
+      Ndm.SessionManager.put(:stocked, items_stocked)
+      Ndm.SessionManager.put(:free, free_space)
+    end
   end
 end
