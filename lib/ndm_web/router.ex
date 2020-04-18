@@ -9,14 +9,25 @@ defmodule NdmWeb.Router do
     plug :put_secure_browser_headers
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
+  pipeline :require_login do
+    plug NdmWeb.Plugs.RequireLogin
   end
 
   scope "/", NdmWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/login", SessionController, :new
+    post "/login", SessionController, :create
+
+    delete "/logout", SessionController, :delete
+  end
+
+  scope "/", NdmWeb do
+    pipe_through [:browser, :require_login]
+
+    resources "/", PageController, only: [:index]
+
+    resources "/dailies", DailiesController, only: [:index, :show]
   end
 
   # Other scopes may use custom stacks.

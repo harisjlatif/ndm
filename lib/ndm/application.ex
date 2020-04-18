@@ -14,9 +14,14 @@ defmodule Ndm.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Ndm.PubSub},
       # Start the Endpoint (http/https)
-      NdmWeb.Endpoint
+      NdmWeb.Endpoint,
       # Start a worker by calling: Ndm.Worker.start_link(arg)
       # {Ndm.Worker, arg}
+      %{
+        id: CookieJar,
+        start: {CookieJar, :start_link, []},
+        name: Cookies
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
