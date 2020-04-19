@@ -1,29 +1,36 @@
-defmodule Ndm.Dailies.AnchorManagement do
+defmodule Ndm.Dailies.LunarTemple do
   require Logger
   import Ndm.Dailies.Utils
   use GenServer
   use Timex
   @interval 2000
-  @daily "AnchorManagement"
+  @daily "LunarTemple"
 
   def execute() do
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/anchormanagement.phtml") do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/shenkuu/lunar/?show=puzzle") do
       {:ok, response} ->
         msg = Floki.parse(response.body) |> Floki.find(".content")
-        if (String.contains?(msg |> Floki.text, "back for more")) do
-          "Feel free to come back tomorrow, though, because... well, you never know."
+        if (String.contains?(msg |> Floki.text, "Please try again tomorrow")) do
+          "The wise Gnorbu says: 'You may only attempt my challenge once per day. Please try again tomorrow!'"
+          |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+          get_nst()
         else
-          input_id = Floki.parse(response.body) |> Floki.find("#btn-fire") |> Floki.find("input") |> Floki.attribute("value") |> Floki.text
-          case Ndm.HttpUtils.visit_url("http://www.neopets.com/pirates/anchormanagement.phtml", [action: input_id]) do
-            {:ok, fire_response} ->
-              Floki.parse(fire_response.body) |> Floki.find(".prize-info") |> Floki.text
-            {:error, fire_response} ->
-              IO.inspect(fire_response)
-              "Error in processing #{@daily}"
+          text = msg |> Floki.find("div script:nth-child(2)") |> Floki.text([js: true])
+          found_angle_string = Regex.run(~r/angleKreludor=[+-]?([0-9]*[.])?[0-9]+&/, text) |> Floki.text |> String.trim("angleKreludor=") |> String.trim("&")
+
+          {angle_float, _} = Float.parse(found_angle_string)
+          angle = trunc(Float.round(angle_float / 22.5))
+
+          log("Determined #{angle} for #{found_angle_string} as the answer")
+          case Ndm.HttpUtils.visit_url("http://www.neopets.com/shenkuu/lunar/results.phtml", [submitted: "true", phase_choice: angle]) do
+            {:ok, submit_response} ->
+              Floki.parse(submit_response.body) |> Floki.find(".content") |> Floki.text |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
+              get_nst()
+            _ ->
+              log("error running execute")
+              nil
           end
         end
-        |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
-        get_nst()
       _ ->
         log("error running execute")
         nil

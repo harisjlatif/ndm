@@ -5,7 +5,6 @@ defmodule NdmWeb.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
-    plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
 
@@ -40,6 +39,8 @@ defmodule NdmWeb.Router do
     get "/", PageController, :index
     get "/index.html", PageController, :index
     get "/dailies.html", PageController, :dailies
+    get "/inventory.html", PageController, :inventory
+    get "/shop.html", PageController, :shop
   end
 
   # Other scopes may use custom stacks.

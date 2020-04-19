@@ -16,6 +16,8 @@
         <li><a href="#"><i class="fa fa-dollar fa-fw"></i> <%=Ndm.SessionManager.get_neopoints()%></a></li>
         <li><a href="#"><i class="fa fa-university fa-fw"></i> <%=Ndm.SessionManager.get_bank()%></a></li>
         <li><a href="#"><i class="fa fa-shopping-cart fa-fw"></i> <%=Ndm.SessionManager.get_till()%></a></li>
+        <li><a href="#"><i class="fa fa-shopping-cart fa-fw"></i> Stocked: <%=Ndm.SessionManager.get_stocked()%></a></li>
+        <li><a href="#"><i class="fa fa-shopping-cart fa-fw"></i> Free Space: <%=Ndm.SessionManager.get_free()%></a></li>
     </ul>
 
     <ul class="nav navbar-right navbar-top-links">
@@ -39,7 +41,17 @@
                     <a href="/index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 
-                <li><a href="/dailies.html"><i class="fa fa-info fa-fw"></i> Dailies</a></li>
+                <li>
+                    <a href="/dailies.html"><i class="fa fa-info fa-fw"></i> Dailies</a>
+                </li>
+
+                <li>
+                    <a href="/inventory.html"><i class="fa fa-info fa-fw"></i> Inventory</a>
+                </li>
+                
+                <li>
+                    <a href="/shop.html"><i class="fa fa-info fa-fw"></i> Shop</a>
+                </li>
             </ul>
         </div>
         <!-- /.sidebar-collapse -->

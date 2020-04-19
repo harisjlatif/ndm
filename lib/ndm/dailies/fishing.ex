@@ -1,21 +1,18 @@
-defmodule Ndm.Dailies.Tombola do
+defmodule Ndm.Dailies.Fishing do
   require Logger
   import Ndm.Dailies.Utils
   use GenServer
   use Timex
   @interval 2000
-  @daily "Tombola"
+  @daily "Fishing"
 
   def execute() do
-    headers = ["Referer": "http://www.neopets.com/island/tombola.phtml"]
-    case Ndm.HttpUtils.visit_url("http://www.neopets.com/island/tombola2.phtml", [], headers) do
+    case Ndm.HttpUtils.visit_url("http://www.neopets.com/water/fishing.phtml", [go_fish: "1"]) do
       {:ok, response} ->
-        msg = Floki.parse(response.body) |> Floki.find(".content")
-        if (String.contains?(msg |> Floki.text, "Oops!")) do
-          "Oops! Sorry, you are only allowed one Tombola free spin every day"
-        else
-          List.first(msg) |> Floki.text
-        end
+        Floki.parse(response.body)
+        |> Floki.find(".content")
+        |> Floki.find("center")
+        |> Floki.text
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
       _ ->

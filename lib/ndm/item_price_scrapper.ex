@@ -1,4 +1,16 @@
 defmodule Ndm.ItemPriceScrapper do
+  def fill_item_prices(items) do
+    {:ok, item_prices} = get_item_prices()
+    Enum.map(items, fn x -> %{:item_name => x, :item_price => Map.get(item_prices, x)} end)
+  end
+
+  def get_item_price(item) do
+    case get_item_prices() do
+      {:ok, prices} -> Enum.find(prices, fn x -> x == item end)
+      {:error, _} -> "N/A"
+    end
+  end
+
   def get_item_prices do
     file_name_string = "price_list/#{Timex.format!(Timex.now, "items-%Y-%m.json", :strftime)}"
     case File.read(file_name_string) do
@@ -7,6 +19,7 @@ defmodule Ndm.ItemPriceScrapper do
       {:error, _} ->
         IO.inspect("File not found will create a new one.")
         File.write(file_name_string, Poison.encode!(create_item_price_file(), pretty: true))
+        Poison.decode(file_name_string)
     end
   end
 
@@ -26,20 +39,26 @@ defmodule Ndm.ItemPriceScrapper do
                 price_high: "",shop: "", search_order: "price", sort: "asc", lim: "100",
                 st: st_value]
 
-         {_, response} = HTTPoison.post("http://www.neocodex.us/forum/index.php", {:form, params})
+        case HTTPoison.post("http://www.neocodex.us/forum/index.php", {:form, params}) do
+          {:error, _} ->
+            IO.inspect("Error")
 
-        item_list_floki =
-          Floki.parse(response.body) |> Floki.find(".general_box") |> Floki.find(".ipsList_inline") |> Floki.find("li")
+            Map.merge(acc, %{})
+          {:ok, response}->
+            item_list_floki =
+            Floki.parse(response.body) |> Floki.find(".general_box") |> Floki.find(".ipsList_inline") |> Floki.find("li")
 
-        item_price_map = Enum.reduce(item_list_floki, %{}, fn x, acc ->
-          item_name = Floki.find(x, ".desc") |> Floki.find("a") |> Floki.text |> String.trim
-          item_price = Floki.find(x, ".desc") |> Floki.find(".idbQuickPrice") |> Floki.text
-          Map.put(acc, item_name, item_price)
-        end)
+            item_price_map =
+              Enum.reduce(item_list_floki, %{}, fn x, acc ->
+                item_name = Floki.find(x, ".desc") |> Floki.find("a") |> Floki.text |> String.trim
+                item_price = Floki.find(x, ".desc") |> Floki.find(".idbQuickPrice") |> Floki.text
+                Map.put(acc, item_name, item_price)
+              end)
 
-        IO.puts("Completed parsing page #{st_value}")
+            IO.puts("Completed parsing page #{st_value}")
 
-        Map.merge(acc, item_price_map)
+            Map.merge(acc, item_price_map)
+        end
       end)
   end
 end

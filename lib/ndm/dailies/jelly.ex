@@ -1,29 +1,55 @@
 defmodule Ndm.Dailies.Jelly do
   require Logger
+  import Ndm.Dailies.Utils
   use GenServer
   use Timex
   @interval 2000
   @daily "Jelly"
-  @nst "America/Los_Angeles"
 
   def execute() do
     case Ndm.HttpUtils.visit_url("http://www.neopets.com/jelly/jelly.phtml", [type: "get_jelly"]) do
       {:ok, response} ->
-        msg = Floki.parse(response.body) |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p")
-        if (String.contains?(msg |> Floki.text, "You cannot take more than one jelly per day")) do
-          "The Jelly Keeper shouts 'NO! You cannot take more than one jelly per day!'"
-        else
-          List.first(msg) |> Floki.text
+        parsed_body = Floki.parse(response.body)
+        content_msg = parsed_body |> Floki.find(".content") |> Floki.text
+        cond do
+          String.contains?(content_msg, "You cannot take more than one jelly per day") ->
+            "The Jelly Keeper shouts 'NO! You cannot take more than one jelly per day!'"
+          String.contains?(content_msg, "The Jelly has been eaten") ->
+            "The Jelly has been eaten :(. I am sure there is more on the way, why don't you check back soon!"
+          true ->
+            parsed_body |> Floki.find(".content") |> Floki.find("center") |> Floki.find("p") |> List.first |> Floki.text
         end
         |> NdmWeb.DailiesChannel.broadcast_lastresult_update(@daily)
         get_nst()
       _ ->
-        get_nst()
+        log("error running execute")
+        nil
     end
   end
 
-  def time_till_execution(last_execution) do
-    last_execution |> Timex.Timezone.end_of_day
+  def handle_info({:work, interval}, state) do
+    state = 
+      if (Ndm.SessionManager.get_cookies != nil) do
+        # If last_execution is nil we need to execute
+        case Map.get(state, :last_execution) do
+          nil -> # Execute the process
+            log("Processing")
+            Map.put(state, :last_execution, execute())
+          last_execution -> # We have not expired the timer
+            if (last_modified_expired?(@daily, last_execution)) do
+              log("Timer has expired, resetting last modified")
+              Map.delete(state, :last_execution)
+            else
+              broadcast_timer(@daily, last_execution)
+              state
+            end
+        end
+      else
+        state
+      end
+
+    schedule_work(interval)
+    {:noreply, state}
   end
 
   def start_link() do
@@ -33,50 +59,15 @@ defmodule Ndm.Dailies.Jelly do
     schedule_work(@interval)
   end
 
-  defp broadcast_timer(last_execution) do
-    # Push the new timer to the page
-    time_till_execution(last_execution)
-    |> Timex.diff(get_nst(), :duration)
-    |> Timex.Duration.to_clock
-    |> NdmWeb.DailiesChannel.broadcast_timer_update(@daily)
-  end
-
-  defp last_modified_expired?(last_execution) do
-    Timex.before?(time_till_execution(last_execution), get_nst())
-  end
-
-  defp get_nst() do
-    Timex.now(@nst)
-  end
-
-  def handle_info({:work, interval}, state) do
-    state = if (Ndm.SessionManager.get_cookies != nil) do
-      case Map.get(state, :last_execution) do
-        nil ->
-          log("Processing")
-          Map.put(state, :last_execution, execute())
-          last_execution ->
-          if (last_modified_expired?(last_execution)) do
-            log("Timer has expired, resetting last modified")
-            Map.delete(state, :last_execution)
-          else
-            broadcast_timer(last_execution)
-            state
-          end
-      end
-    else
-      state
-    end
-
-    schedule_work(interval)
-    {:noreply, state}
-  end
-
   defp schedule_work(interval) do
     Process.send_after(__MODULE__, {:work, interval}, interval)
   end
 
   defp log(msg) do
     Logger.info("[Dailies] [#{@daily}] #{msg}")
+  end
+
+  def init(args) do
+    {:ok, args}
   end
 end
