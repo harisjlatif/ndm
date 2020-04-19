@@ -1,0 +1,34 @@
+
+<div class="hero-body">
+<div class="container has-text-centered">
+<div class="column is-4 is-offset-4">
+  <h3 class="title">Login</h3>
+  <hr class="login-hr">
+  <div class="box">
+    <%= form_for @conn, Routes.session_path(@conn, :new), [as: :session], fn f -> %>
+      <div class="field">
+      <p class="control has-icons-left">
+        <%= text_input f, :username, placeholder: "username", class: "input" %>
+        <span class="icon is-small is-left">
+          <i class="fas fa-envelope"></i>
+        </span>
+      </p>
+      </div>
+
+      <div class="field">
+        <p class="control has-icons-left">
+          <%= password_input f, :password, placeholder: "password", class: "input" %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-lock"></i>
+          </span>
+        </p>
+      </div>
+
+      <div class="field">
+      <%= submit "Sign in", class: "button is-success" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+</div>
+</div>

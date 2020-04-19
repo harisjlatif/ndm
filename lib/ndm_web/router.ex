@@ -16,8 +16,7 @@ defmodule NdmWeb.Router do
   scope "/", NdmWeb do
     pipe_through :browser
 
-    get "/login", SessionController, :new
-    post "/login", SessionController, :create
+    resources "/", SessionController, only: [:new, :create]
 
     delete "/logout", SessionController, :delete
   end

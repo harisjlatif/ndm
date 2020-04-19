@@ -11,7 +11,7 @@ defmodule NdmWeb.Plugs.RequireLogin do
       #  |> assign(:current_user, current_user)
     else
       conn
-        |> redirect(to: "/login")
+        |> redirect(to: "/new")
         |> halt()
     end
   end
