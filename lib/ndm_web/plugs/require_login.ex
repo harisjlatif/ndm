@@ -6,14 +6,13 @@ defmodule NdmWeb.Plugs.RequireLogin do
 
   def call(conn, _opts) do
     if _ = Plug.Conn.get_session(conn, :current_user_id) do
-      #current_user = Accounts.get_user!(user_id)
-      #conn
+      # current_user = Accounts.get_user!(user_id)
+      # conn
       #  |> assign(:current_user, current_user)
     else
       conn
-        |> redirect(to: "/new")
-        |> halt()
+      |> redirect(to: "/new")
+      |> halt()
     end
   end
-
 end

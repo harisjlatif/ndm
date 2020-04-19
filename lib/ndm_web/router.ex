@@ -18,13 +18,15 @@ defmodule NdmWeb.Router do
 
     resources "/", SessionController, only: [:new, :create]
 
+    resources "/", PageController, only: [:index]
+
     delete "/logout", SessionController, :delete
   end
 
   scope "/", NdmWeb do
     pipe_through [:browser, :require_login]
 
-    resources "/", PageController, only: [:index]
+    # resources "/", PageController, only: [:index]
 
     resources "/dailies", DailiesController, only: [:index, :show]
   end

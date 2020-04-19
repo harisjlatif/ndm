@@ -7,16 +7,22 @@ defmodule NdmWeb.SessionController do
 
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"session" => params}) do
-    case CookieJar.HTTPoison.post(Ndm.Cookies, "http://www.neopets.com/login.phtml", {:form, [username: params["username"], password: params["password"]]}) do
+    case CookieJar.HTTPoison.post(
+           Ndm.Cookies,
+           "http://www.neopets.com/login.phtml",
+           {:form, [username: params["username"], password: params["password"]]}
+         ) do
       {:ok, %HTTPoison.Response{status_code: 302}} ->
         conn
         |> put_session(:current_user_id, params["username"])
         |> put_flash(:info, "Signed in successfully.")
         |> redirect(to: Routes.page_path(conn, :index))
+
       {:ok, _} ->
         conn
         |> put_flash(:error, "There was a problem with your username/password")
         |> render("new.html")
+
       {:error, _response} ->
         conn
         |> put_flash(:error, "There was a problem with the connection, try again later")

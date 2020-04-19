@@ -1,0 +1,20 @@
+<aside class="column is-2">
+  <nav class="menu">
+    <p class="menu-label">General</p>
+    <ul class="menu-list">
+      <li><%= active_link "Dashboard", @conn, to: Routes.page_path(@conn, :index)%></li>
+    </ul>
+    <p class="menu-label">Tools</p>
+    <ul class="menu-list">
+      <li><%= link "Daily Manager", to: Routes.dailies_path(@conn, :index), class: active_class(@conn, Routes.dailies_path(@conn, :index))%></li>
+      <li><a>Stock Broker</a></li>
+      <li><a>Shop Pricer</a></li>
+      <li><a>Page Crawler</a></li>
+    </ul>
+    <p class="menu-label">Account</p>
+    <ul class="menu-list">
+      <li><a>Settings</a></li>
+      <li><a>Log Out</a></li>
+    </ul>
+  </nav>
+</aside>
