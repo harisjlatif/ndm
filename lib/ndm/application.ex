@@ -17,11 +17,8 @@ defmodule Ndm.Application do
       NdmWeb.Endpoint,
       # Start a worker by calling: Ndm.Worker.start_link(arg)
       # {Ndm.Worker, arg}
-      %{
-        id: CookieJar,
-        start: {CookieJar, :start_link, []},
-        name: Cookies
-      }
+      {Registry, keys: :unique, name: Ndm.CookieJarRegistry},
+      {DynamicSupervisor, strategy: :one_for_one, name: Ndm.CookieJarSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
